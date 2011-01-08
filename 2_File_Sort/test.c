@@ -45,13 +45,12 @@ int main(int argc, char** argv) {
 	if (!fout)
 		die("WTF");
 	for(i = 0; i < count; i++){
-		writed = fprintf(fout, "%d\n", arr[i]);
-		if (writed < 0){
+		written = fprintf(fout, "%d\n", arr[i]);
+		if (written < 0){
 			fclose(fout);
 			die("ne shmogla zapisat");
 		}
 	}
 	fclose(fout);
-	die("All Ok");
 	return 0;
 }

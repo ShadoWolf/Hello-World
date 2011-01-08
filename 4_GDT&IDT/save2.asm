@@ -12,7 +12,7 @@ f1:
 	mov	dh,ch
 	mov	bx,buffer
 	int	13h
-	
+	jc	_error
 	cli
 	lgdt	[GDTpointer]
 	lidt	[IDTpointer]
@@ -27,8 +27,22 @@ f2:
     sti
 	int	13
 	mov	ax,0DEADh
+_halt:
 	cli
 	hlt
+	sti
+	jmp	_halt
+_error:
+	mov ax, 1301h
+	mov bp, error
+	mov cx, 5
+	mov bh, 0
+	mov bl, 04
+	xor dx, dx
+	int 10h
+	jmp	_halt
+	
+	error db 'Error'
 
 string  db      'Random INT'
 int_all:

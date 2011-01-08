@@ -11,18 +11,24 @@
 	mov	dh,0
 	mov	bx,zz
 	int	13h
+	jc	_error
 	jmp	zz
-
+_halt:
 	cli
 	hlt
-
-print:
-	mov	ah,0Ah
-	mov	al,48h
-	mov	bl,0
-	mov	cx,1
-	int	10h
-	ret
+	sti
+	jmp	_halt
+_error:
+	mov ax, 1301h
+	mov bp, error
+	mov cx, 5
+	mov bh, 0
+	mov bl, 04
+	xor dx, dx
+	int 10h
+	jmp	_halt
+	
+	error db 'Error'
 	times	510 - ($ - $$) db 0
 	db	055h
 	db	0AAh
