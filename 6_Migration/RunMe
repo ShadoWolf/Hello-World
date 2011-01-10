@@ -1,0 +1,17 @@
+#!/bin/bash
+echo 'Compile'
+gcc -o Migration.img Migration.c
+echo 'Switching'
+time ./Migration.img &
+j=0;
+pid=$!
+echo pid = $pid
+while [ "`ps ax -o pid | grep $pid`" != "" ]; do
+taskset -c -p $((j)) $pid
+j=$((j^1));
+done
+
+echo 'One processor'
+time ./Migration.img
+
+rm Migration.img
