@@ -1,0 +1,4 @@
+#!/bin/bash
+nasm -f elf sum.asm
+gcc main.c sum.o -o main.out
+./main.out
