@@ -1,0 +1,6 @@
+Y_SIZE	Time by rows	Time by columns
+50		1				2
+100		3				9
+200		6				20
+300		10				29
+500		16				57

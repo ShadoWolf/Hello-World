@@ -14,14 +14,16 @@ f1:
 	int	13h
 	jc	_error
 	cli
+	
 	lgdt	[GDTpointer]
 	lidt	[IDTpointer]
-	mov	eax,cr0
-	or	al,1
-	mov	cr0,eax
 	
 	mov	ax,8*2
 	mov	ss,ax
+	mov	eax,cr0
+	or	al,1
+	mov	cr0,eax
+
 	jmp	8:f2
 f2: 
     sti

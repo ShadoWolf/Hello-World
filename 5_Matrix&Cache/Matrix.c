@@ -3,7 +3,7 @@
 #include <time.h>
 
 #define X_SIZE 10000
-#define Y_SIZE 100
+#define Y_SIZE 50
 #define ITER_NUM 1000
 
 void die(char * message){
