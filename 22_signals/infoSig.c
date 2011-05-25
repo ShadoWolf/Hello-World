@@ -6,7 +6,7 @@ volatile int flag = 1;
 
 void sigHandler(int sigNum, siginfo_t *info, void *lalala)
 {
-	printf("Signal No.%d\n",info->si_signo);
+	printf("Signal No.%d; pid=%d; pgid=%d; \n",info->si_signo, getpid(), getpgid());
 	if(sigNum==20)
 		flag=0;
 }

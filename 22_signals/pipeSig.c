@@ -30,7 +30,7 @@ int main()
 			sigNum=-1;		
 		}
 		else if (readedNum!=-1) {
-			printf("Signal No.%d\n",sigNum);
+			printf("Signal No.%d; pid=%d; pgid=%d; \n",sigNum, getpid(), getpgid());
 		}
 		else {
 			return 4;

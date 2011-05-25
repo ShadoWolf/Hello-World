@@ -3,16 +3,18 @@ if [[ !(-r $1 && -r $2)  ]]; then
 	echo "Files are not readable" ;
 	exit
 fi
-base_file=$1
-test_file=$2
 
-cat "./$2"|while read md5_size
-do
-	while read filename && [ -n "$filename" ]
-	do
-		if ! grep -q "$md5_size $filename" $base_file
-		then
-			echo "$md5_size $filename"
-		fi
+declare -A baseArray
+
+while read md5Test sizeTest; do
+	while read filenameTest && [[ -n $filenameTest ]];do
+		baseArray[$filenameTest]="$md5Test--$sizeTest"
 	done
-done
+done < $1
+
+
+while read md5Base sizeBase filenameBase; do
+	if [[ ${baseArray[$filenameBase]} != "$md5Base--$sizeBase" ]]; then
+		echo "Changed file: $sizeBase.Was: ${baseArray[$filenameBase]}.Now: $md5Base--$sizeBase"
+	fi;
+done < $2
