@@ -1,0 +1,1 @@
+﻿см. README.txt в 25_dekker.

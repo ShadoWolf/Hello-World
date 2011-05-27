@@ -6,39 +6,32 @@
 #define THREAD_AFFINITY_ERR 2
 #define THREAD_JOIN_ERR 3
 
-bool flag[2]={false, false};
-volatile int turn=0;
+volatile bool flag[2]={false, false};
+volatile bool turn=0;
 volatile int criticalResource=0;
 
-static void *proc1(void *argv) {
-	for (int i=0; i<1000000; i++) {
-		flag[0]=true;
-		while (flag[1]==true) {
-			if (turn!=0) {
-				flag[0]=false;
-				while (turn!=0);
-				flag[0]=true;
-			}
+void dekkerLock(bool id) {
+	flag[id]=true;
+	while (flag[id^1]==true) {
+		if (turn!=id) {
+			flag[id]=false;
+			while (turn!=id);
+			flag[id]=true;
 		}
-		criticalResource++;
-		turn=1;
-		flag[0]=false;
 	}
 }
 
-static void *proc2(void *argv) {
+void dekkerUnlock(bool id) {
+	flag[id]=false;
+	turn=id^1;
+}
+
+static void *aThread(void *argv) {
+	bool id=(bool)argv;
 	for (int i=0; i<1000000; i++) {
-		flag[1]=true;
-		while (flag[0]==true) {
-			if(turn!=1) {
-				flag[1]=false;
-				while(turn!=1);
-				flag[1]=true;
-			}
-		}
+		dekkerLock(id);
 		criticalResource++;
-		turn=0;
-		flag[1]=false;
+		dekkerUnlock(id);
 	}
 }
 
@@ -49,7 +42,7 @@ int main(int argc,char **argv) {
 	CPU_SET(0, &cpu1);
 	CPU_ZERO(&cpu2);
 	CPU_SET(1, &cpu2);
-	if (pthread_create(&thread1, NULL, proc1, NULL) || pthread_create(&thread2, NULL, proc2, NULL)) {
+	if (pthread_create(&thread1, NULL, aThread, (void*)0) || pthread_create(&thread2, NULL, aThread, (void*)1)) {
 		return THREAD_CREATE_ERR;
 	}
 	if (pthread_setaffinity_np(thread1, sizeof(cpu_set_t), &cpu1) || pthread_setaffinity_np(thread2, sizeof(cpu_set_t), &cpu2)) {
