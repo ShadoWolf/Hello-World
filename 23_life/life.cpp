@@ -7,6 +7,7 @@
 
 #define	THREAD_CREATE_ERR 1
 #define	THREAD_JOIN_ERR 2
+#define MUTEX_ERR 3
 
 pthread_mutex_t aMutex=PTHREAD_MUTEX_INITIALIZER;
 const bool bIsTor=false;
@@ -17,13 +18,21 @@ static void *life_thread(void *args) {
 	srand(time(NULL));
 	for (;;) {
 		int newBuffer=-1;
-		pthread_mutex_lock(&aMutex);
+		if (pthread_mutex_lock(&aMutex)) {
+			return MUTEX_ERR;
+		}
 		for (newBuffer=0; newBuffer<3 && (newBuffer==lastCalcBuffer || newBuffer==printBuffer); newBuffer++);
-		pthread_mutex_unlock(&aMutex);
+		if (pthread_mutex_unlock(&aMutex)) {
+			return MUTEX_ERR;
+		}
 		iterateLife(nCol, nRow, buffer[lastCalcBuffer], buffer[newBuffer], bIsTor);
-		pthread_mutex_lock(&aMutex);
+		if (pthread_mutex_lock(&aMutex)) {
+			return MUTEX_ERR;
+		}
 		lastCalcBuffer=newBuffer;
-		pthread_mutex_unlock(&aMutex);
+		if (pthread_mutex_unlock(&aMutex)) {
+			return MUTEX_ERR;
+		}
 		sleep(1);
 	}
 }
@@ -32,13 +41,21 @@ static void *print_thread(void *args) {
 	char c;
 	for(;;) {
 		if (scanf("%c", &c)) {
-			pthread_mutex_lock(&aMutex);
+			if (pthread_mutex_lock(&aMutex)) {
+				return MUTEX_ERR;
+			}
 			printBuffer=lastCalcBuffer;
-			pthread_mutex_unlock(&aMutex);
+			if (pthread_mutex_unlock(&aMutex)) {
+				return MUTEX_ERR;
+			}
 			puts(buffer[printBuffer]);
-			pthread_mutex_lock(&aMutex);
+			if (pthread_mutex_lock(&aMutex)) {
+				return MUTEX_ERR;
+			}
 			printBuffer=-1;
-			pthread_mutex_unlock(&aMutex);
+			if (pthread_mutex_unlock(&aMutex)) {
+				return MUTEX_ERR;
+			}
 		}
 	}
 }
