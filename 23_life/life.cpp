@@ -19,19 +19,19 @@ static void *life_thread(void *args) {
 	for (;;) {
 		int newBuffer=-1;
 		if (pthread_mutex_lock(&aMutex)) {
-			return MUTEX_ERR;
+			pthread_exit((void*)MUTEX_ERR);
 		}
 		for (newBuffer=0; newBuffer<3 && (newBuffer==lastCalcBuffer || newBuffer==printBuffer); newBuffer++);
 		if (pthread_mutex_unlock(&aMutex)) {
-			return MUTEX_ERR;
+			pthread_exit((void*)MUTEX_ERR);
 		}
 		iterateLife(nCol, nRow, buffer[lastCalcBuffer], buffer[newBuffer], bIsTor);
 		if (pthread_mutex_lock(&aMutex)) {
-			return MUTEX_ERR;
+			pthread_exit((void*)MUTEX_ERR);
 		}
 		lastCalcBuffer=newBuffer;
 		if (pthread_mutex_unlock(&aMutex)) {
-			return MUTEX_ERR;
+			pthread_exit((void*)MUTEX_ERR);
 		}
 		sleep(1);
 	}
@@ -42,19 +42,19 @@ static void *print_thread(void *args) {
 	for(;;) {
 		if (scanf("%c", &c)) {
 			if (pthread_mutex_lock(&aMutex)) {
-				return MUTEX_ERR;
+				pthread_exit((void*)MUTEX_ERR);
 			}
 			printBuffer=lastCalcBuffer;
 			if (pthread_mutex_unlock(&aMutex)) {
-				return MUTEX_ERR;
+				pthread_exit((void*)MUTEX_ERR);
 			}
 			puts(buffer[printBuffer]);
 			if (pthread_mutex_lock(&aMutex)) {
-				return MUTEX_ERR;
+				pthread_exit((void*)MUTEX_ERR);
 			}
 			printBuffer=-1;
 			if (pthread_mutex_unlock(&aMutex)) {
-				return MUTEX_ERR;
+				pthread_exit((void*)MUTEX_ERR);
 			}
 		}
 	}
